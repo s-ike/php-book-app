@@ -1,3 +1,6 @@
+/Docker/mysql/data/*
+!/Docker/mysql/data/.gitkeep
+
 # OS generated files #
 ######################
 .DS_Store
