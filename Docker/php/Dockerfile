@@ -18,3 +18,4 @@ COPY . /var/www/html
 
 ENV COMPOSER_ALLOW_SUPERUSER 1
 COPY --from=composer:1.9.3 /usr/bin/composer /usr/bin/composer
+RUN cd ./app && composer install --no-dev -o
