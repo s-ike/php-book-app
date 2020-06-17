@@ -9,7 +9,7 @@
     <div class="card mb-3">
         <div class="card-body">
             <h5 class="card-title">
-                <i class="fas fa-user-circle"></i> <?='タロウ' // TODO: ユーザー管理機能実装時に修正する ?>
+                <i class="fas fa-user-circle"></i> <?=h($question->user->nickname)?>
             </h5>
             <p class="card-text"><?=nl2br(h($question->body))?></p>
             <p class="card-subtitle mb-2 text-muted">
@@ -35,16 +35,18 @@
     <div class="card w-75 mb-2 ml-auto">
         <div class="card-body">
             <h5 class="card-title">
-                <i class="fas fa-user-circle"></i> <?='じろう' // TODO: ユーサ管理機能実装時に修正する ?>
+                <i class="fas fa-user-circle"></i> <?=h($answer->user->nickname)?>
             </h5>
             <p class="card-text"><?=nl2br(h($answer->body))?></p>
             <p class="card-subtitle mb-2 text-muted">
                 <small><?=h($question->created)?></small>
+                <?php if ($this->request->getSession()->read('Auth.User.id') === $answer->user_id): ?>
                 <?=$this->Form->postLink(
                     '削除する',
                     ['controller' => 'Answers', 'action' => 'delete', $answer->id],
                     ['confirm' => '回答を削除します。よろしいですか？'],
                     ['class' => 'card-link']);?>
+                <?php endif; ?>
             </p>
         </div>
     </div>
@@ -54,9 +56,10 @@
 
 <section class="answer-post mb-5">
     <h2 class="mb-3"><i class="fas fa-comment-dots"></i> 回答する</h2>
-<?php if ($answers->count() >= 100): ?>
+<?php if ($this->request->getSession()->read('Auth.User.id')): ?>
+    <?php if ($answers->count() >= \App\Controller\AnswersController::ANSWER_UPPER_LIMIT): ?>
     <p class="text-center">回答数が上限に達してしまっているためこれ以上回答することはできません</p>
-<?php else: ?>
+    <?php else: ?>
     <?=$this->Form->create($newAnswer, ['url' => '/answers/add'])?>
     <?php
     echo $this->Form->control('body', [
@@ -69,5 +72,8 @@
     ?>
     <?=$this->Form->button('投稿する', ['class' => 'btn btn-warning'])?>
     <?=$this->Form->end()?>
+    <?php endif; ?>
+<?php else: ?>
+    <p>回答をするには<?=$this->Html->link('ログイン', ['controller' => 'Login', 'action' => 'index'])?>が必要です</p>
 <?php endif; ?>
 </section>
